@@ -1,5 +1,7 @@
 // Parent class for character
 
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.lang.Math.*;
 
 public class Character extends Entity
@@ -14,6 +16,7 @@ public class Character extends Entity
   int mnMp;
   int exp;
   int[] xpNextLvl = {0, 5, 10, 15, 20, 25}; // array for xp needed to lvl up
+  Hashtable<Item, Integer> inventory = new Hashtable<Item, Integer>();
   Weapon equip;
 
   public Character(String n)

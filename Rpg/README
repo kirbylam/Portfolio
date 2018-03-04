@@ -1,0 +1,6 @@
+NOT YET COMPLETE
+To compile: make
+To run: java -jar Rpg.jar
+To clean: make clean
+
+Description: Text-based RPG

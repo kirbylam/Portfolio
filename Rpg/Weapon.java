@@ -1,8 +1,7 @@
 // class for weapons
 
-public class Weapon
+public class Weapon extends Item
 {
-  String name;
   int[] atkRng = new int[2];
   int[] mgcRng = new int[2];
   int[] reqStat = new int[3]; // [<str>, <dex>, <wis>]

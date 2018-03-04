@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.Random;
 
@@ -9,6 +10,8 @@ class Rpg
   public static Character player;
 
   public static Random rand;
+
+  public static Potion pot = new Potion();
 
   // prints status during a battle
   public static void printStatus(Monster[] mobs)
@@ -50,10 +53,10 @@ class Rpg
   public static String battleOption()
   {
     boolean valid = false;
-    System.out.println("\n What will you do?");
-    System.out.println("  Fight Item Run");
     while (valid == false)
     {
+      System.out.println("\n What will you do?");
+      System.out.println("  Fight Item Run");
       UI = new Scanner(System.in);
       String choice = UI.next();
       choice = choice.toLowerCase();
@@ -98,7 +101,7 @@ class Rpg
   public static boolean battle()
   {
     int expEarn = 0;
-    int nMobs = 1; //rand.nextInt(2) + 1;
+    int nMobs = rand.nextInt(2) + 1;
     Queue turns = new Queue(); // creates a new queue
     // creates an array of Monsters, size is random
     Monster[] mobs = new Monster[nMobs]; 
@@ -212,7 +215,7 @@ class Rpg
   {
     boolean nextRoom = false; // did the player move to the next room yet?
     System.out.println(" \nWhat will you do?");
-    System.out.println("  Move Search");
+    System.out.println("  Move Search Inventory");
     while (nextRoom == false)
     {
       UI = new Scanner(System.in);
@@ -254,10 +257,40 @@ class Rpg
           }
           break;
         case "search":
+          System.out.println("You look around the room...");
+          if (currRm.chest >= 1)
+          {
+            System.out.println("You see a chest! Would you like to open it?");
+            UI = new Scanner(System.in);
+            choice = UI.next().toLowerCase();
+            if (choice.equals("yes") || choice.equals("y"))
+            {
+              System.out.println("You opened the chest and got a potion!");
+              player.inventory.put(pot, 1);
+            }
+            else if (choice.equals("no") || choice.equals("n"))
+            {
+              System.out.println("You chose not to open the chest."); 
+            }
+            else
+            {
+              System.out.println("Not a valid choice!");
+            }
+          }
+          break;
+        case "inventory":
+          Enumeration<Item> itms = player.inventory.keys();
+          while (itms.hasMoreElements())
+          {
+            Item itm = itms.nextElement();
+            System.out.println(itm.name + " " + player.inventory.get(itm));
+          }
           break;
         case "back":
+          nextRoom = true;
           break;
         default:
+          System.out.println("Not a valid choice!");
           break;
       }
     }
@@ -301,19 +334,30 @@ class Rpg
         System.out.println("\n Not a valid job. Please try again.");
       }
     }
+    player.inventory.put(pot, 1);
     player.equip = starter;
     rmGraph map = createMap();
     rmNode currRm = map.array[0].head;
+    if (battle() == false)
+    {
+      System.out.println(" Game Over!");
+      return;
+    }
+    currRm.visited = true;
     while (boss == false)
     {
       System.out.println(" Current Location: ");
       System.out.println("  " + currRm.rmName);
       currRm = rmOption(map, currRm);
-      /*if (battle() == false)
+      if (currRm.visited == false)
+      {
+        if (battle() == false)
         {
-        System.out.println(" Game Over!");
-        return;
-        }*/
+          System.out.println(" Game Over!");
+          return;
+        }
+        currRm.visited = true;
+      }
     }
   }
 }

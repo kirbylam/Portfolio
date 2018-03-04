@@ -1,11 +1,11 @@
 // node for queue
-public class Node 
+public class qNode 
 {
   String enty;
   long spd;
-  Node next;
+  qNode next;
 
-  public Node(String e, long s)
+  public qNode(String e, long s)
   {
     enty = e;
     spd = s;

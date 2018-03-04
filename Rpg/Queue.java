@@ -1,8 +1,9 @@
 // altered queue
+// "hybrid" queue. Does priority enqueueing and normal queueing
 public class Queue
 {
-  Node head;
-  Node tail;
+  qNode head;
+  qNode tail;
   int len; // keeps track of length of queue
 
   public Queue()
@@ -14,7 +15,7 @@ public class Queue
 
   public void enqueue(String name, long s)
   {
-    Node n = new Node(name, s);
+    qNode n = new qNode(name, s);
     this.len += 1;
     if (this.tail == null)
     {
@@ -27,12 +28,12 @@ public class Queue
     return;
   }
 
-  // adds item to queue based on priority
+  // adds item to queue based on priority (speed)
   public void priorityEnqueue(String name, long s)
   {
-    Node prev = this.head;
-    Node curr = this.head;
-    Node n = new Node(name, s);
+    qNode prev = this.head;
+    qNode curr = this.head;
+    qNode n = new qNode(name, s);
     while (curr != null)
     {
       if (n.spd > curr.spd)
@@ -58,11 +59,11 @@ public class Queue
     return;
   }
   
-  public Node dequeue()
+  public qNode dequeue()
   {
     if (this.head != null)
     {
-      Node curr = this.head;
+      qNode curr = this.head;
       this.head = this.head.next;
       this.len -= 1;
       return curr;
@@ -72,8 +73,8 @@ public class Queue
 
   public void deleteItm(String s)
   {
-    Node prev = this.head;
-    Node curr = this.head;
+    qNode prev = this.head;
+    qNode curr = this.head;
     this.len -= 1;
     while (curr != null)
     {

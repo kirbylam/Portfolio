@@ -10,6 +10,7 @@ class Rpg
 
   public static Random rand;
 
+  // prints status during a battle
   public static void printStatus(Monster[] mobs)
   {
     System.out.println("=============================================");
@@ -25,6 +26,27 @@ class Rpg
     return;
   }
 
+  // returns a random monster
+  public static Monster randMon(int nb)
+  {
+    Monster mon = new Monster();
+    String[] monList = {"slime"};
+    String monName = monList[0];
+    if (monName.equals("slime"))
+    {
+      String name = "slime" + Integer.toString(nb);
+      mon = new Slime(name);
+    }
+    return mon;
+  }
+
+  public static int calcDmg(Entity e)
+  {
+    int dmg = rand.nextInt(e.atk[0]) + e.atk[1];
+    return dmg;
+  }
+
+  // Options when in battle
   public static String battleOption()
   {
     boolean valid = false;
@@ -64,7 +86,7 @@ class Rpg
           return choice;
         case "Run":
           return choice; 
-        default:
+        default: // if the user inputs an incorrect command
           System.out.println(" Not valid!");
           break;
       }
@@ -72,48 +94,40 @@ class Rpg
     return "Error";
   }
 
-  public static Monster randMon(int nb)
-  {
-    Monster mon = new Monster();
-    String[] monList = {"slime"};
-    String monName = monList[0];
-    if (monName.equals("slime"))
-    {
-      String name = "slime" + Integer.toString(nb);
-      mon = new Slime(name);
-    }
-    return mon;
-  }
-
+  // method for a random encounter
   public static boolean battle()
   {
     int expEarn = 0;
     int nMobs = 1; //rand.nextInt(2) + 1;
-    Queue turns = new Queue();
-    Monster[] mobs = new Monster[nMobs];
+    Queue turns = new Queue(); // creates a new queue
+    // creates an array of Monsters, size is random
+    Monster[] mobs = new Monster[nMobs]; 
     for (int i = 0; i < nMobs; i += 1)
     {
       mobs[i] = randMon(i + 1);
       expEarn += mobs[i].exp;
     }
-    turns.enqueue(player.name, player.spd);
+    turns.enqueue(player.name, player.spd); // enqueues player into queue
     for (int i = 0; i < nMobs; i += 1)
     {
+      // enqueues mobs into array based on spd (priority)
       turns.priorityEnqueue(mobs[i].name, mobs[i].spd);
     }
+    // while there are more than 1 entities alive in battle
     while (turns.len > 1)
     {
-      Node atkr = turns.dequeue();
-      if (atkr.enty.equals(player.name))
+      qNode atkr = turns.dequeue(); // dequeues queue (current turn)
+      if (atkr.enty.equals(player.name)) // if current turn is player's
       {
-        printStatus(mobs);
-        String action = battleOption();
+        printStatus(mobs); // prints status
+        String action = battleOption(); // asks for battle option
         switch(action)
         {
           case "attack":
             boolean valid = false;
             while (valid == false)
             {
+              // asks player to choose target b/n 1+ monsters
               System.out.print("\n Choose your target: ");
               for (int i = 0; i < nMobs; i += 1)
               {
@@ -130,9 +144,10 @@ class Rpg
                 if (target.equalsIgnoreCase(mobs[i].name))
                 {
                   valid = true;
-                  System.out.print("\n You did " + player.atk + " damage to ");
+                  int dmg = calcDmg(player);
+                  System.out.print("\n You did " + dmg + " damage to ");
                   System.out.println(mobs[i].name);
-                  mobs[i].mnHp -= player.atk;
+                  mobs[i].mnHp -= dmg;
                   if (mobs[i].mnHp <= 0)
                   {
                     System.out.println(" You killed " + mobs[i].name + "!");
@@ -155,9 +170,10 @@ class Rpg
         {
           if (atkr.enty.equals(mobs[i].name))
           {
+            int dmg = calcDmg(mobs[i]);
             System.out.print(" " + mobs[i].name + " attacks and does ");
-            System.out.println(mobs[i].atk + " damage!");
-            player.mnHp -= mobs[i].atk;
+            System.out.println(dmg + " damage!");
+            player.mnHp -= dmg;
             if (player.mnHp <= 0)
             {
               System.out.println(" You died...");
@@ -173,13 +189,51 @@ class Rpg
     return true;
   }
 
+  // creates the starting map
+  public static rmGraph createMap()
+  {
+    rmGraph g = new rmGraph(7);
+    g.addRm(0, 1);
+    g.addRm(1, 2);
+    g.addRm(2, 3);
+    g.addRm(1, 4);
+    g.addRm(4, 5);
+    g.addRm(5, 6);
+    for (int i = 0; i < 7; i += 1)
+    {
+      g.array[i].head.rmName = "Block" + i;
+    }
+    g.array[3].head.chest = 1;
+    g.array[5].head.chest = 1;
+    return g;
+  }
+
+  public static rmNode rmOption(rmNode currRm)
+  {
+    boolean nextRoom = false; // did the player move to the next room yet?
+    System.out.println(" \nWhat will you do?");
+    System.out.println("  Move Search");
+    while (nextRoom == false)
+    {
+      UI = new Scanner(System.in);
+      String choice = UI.next().toLowerCase();
+      switch (case):
+      {
+
+      }
+    }
+    return currRm;
+  }
+
   public static void main(String args[])
   {
     boolean valid = false;
+    boolean boss = false; // has the player defeated the boss yet?
     System.out.println(" Enter your name");
     UI = new Scanner(System.in);
     rand = new Random();
     String name = UI.next();
+    Weapon starter = null;
     while (valid == false)
     {
       System.out.println("\n Choose your job: Warrior Mage Archer");
@@ -188,16 +242,19 @@ class Rpg
       if (job.equals("archer"))
       {
         player = new Archer(name);
+        starter = new Weapon("Bow", 2, 4, 1, 2, 0, 0, 0);
         valid = true;
       }
       else if (job.equals("mage"))
       {
         player = new Mage(name);
+        starter = new Weapon("Staff", 1, 2, 1, 7, 0, 0, 0);
         valid = true;
       }
       else if (job.equals("warrior"))
       {
         player = new Warrior(name);
+        starter = new Weapon("Sword", 1, 5, 1, 1, 0, 0, 0);
         valid = true;
       }
       else
@@ -205,15 +262,18 @@ class Rpg
         System.out.println("\n Not a valid job. Please try again.");
       }
     }
-    if (battle() == false)
+    player.equip = starter;
+    rmGraph map = createMap();
+    rmNode currRm = map.array[0].head;
+    while (boss == false)
     {
-      System.out.println(" Game Over!");
-      return;
-    }
-    if (battle() == false)
-    {
-      System.out.println(" Game Over!");
-      return;
+      System.out.println(" Current Location: ");
+      System.out.println("  " + currRm.rmName);
+      /*if (battle() == false)
+      {
+        System.out.println(" Game Over!");
+        return;
+      }*/
     }
   }
 }

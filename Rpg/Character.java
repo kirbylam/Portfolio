@@ -1,4 +1,7 @@
 // Parent class for character
+
+import java.lang.Math.*;
+
 public class Character extends Entity
 {
   String name;
@@ -26,7 +29,7 @@ public class Character extends Entity
     mxMp = 10;
     mnMp = 10;
     calcSpd();
-    calcDmg();
+    calcDRng();
     exp = 0;
     equip = null;
   }
@@ -41,7 +44,7 @@ public class Character extends Entity
       levelUp();
     }
     calcSpd();
-    calcDmg();
+    calcDRng();
     return;
   }
 
@@ -51,9 +54,18 @@ public class Character extends Entity
     return;
   }
 
-  public void calcDmg()
+  // calculates damage range
+  public void calcDRng()
   {
-    atk = str;
+    int additive = (int) Math.ceil(str / 2);
+    if (equip == null) // if the player has no weapon equiped
+    {
+      atk[0] = 1 + additive;
+      atk[1] = 5 + additive;
+      return;
+    }
+    atk[0] = additive + equip.atkRng[0];
+    atk[1] = additive + equip.atkRng[1];
     return;
   }
 

@@ -1,3 +1,5 @@
+// class for weapons
+
 public class Weapon
 {
   String name;
@@ -5,12 +7,23 @@ public class Weapon
   int[] mgcRng = new int[2];
   int[] reqStat = new int[3]; // [<str>, <dex>, <wis>]
 
-  public Weapon(String n, int[] aRng, int[] mRng, int[] req)
+  public Weapon()
+  {
+    name = "";
+  }
+  // n: name, aMin/aMax: minimum & maximum attack range, 
+  // mMin & mMax: min & max magic range, sReq: required strength for weapon,
+  // dReq: required dex for weapon, mReq: required magic for weapon
+  public Weapon(String n, int aMin, int aMax, int mMin, int mMax, int sReq, int dReq, int mReq)
   {
     name = n;
-    atkRng = aRng;
-    mgcRng = mRng;
-    reqStat = req;
+    atkRng[0] = aMin;
+    atkRng[1] = aMax;
+    mgcRng[0] = mMin;
+    mgcRng[1] = mMax;
+    reqStat[0] = sReq;
+    reqStat[1] = dReq;
+    reqStat[2] = mReq;
   }
 }
 

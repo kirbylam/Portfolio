@@ -17,12 +17,16 @@ public class rmGraph
 
   public void addRm(int s, int d) // s-source, d-destination (add edge)
   {
-    rmNode newNode = new rmNode(d);
-    newNode.next = this.array[s].head;
-    this.array[d].head = newNode;
-    newNode = new rmNode(s);
-    newNode.next = this.array[d].head;
-    this.array[s].head = newNode;
+    if (this.array[s].head == null)
+    {
+      this.array[s].Insert(s);
+    }
+    this.array[s].Insert(d);
+    if (this.array[d].head == null)
+    {
+      this.array[d].Insert(d);
+    }
+    this.array[d].Insert(s);
     return;
   }
 }

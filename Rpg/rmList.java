@@ -2,10 +2,25 @@
 
 public class rmList
 {
-  rmNode head;
+  rmNode head, tail;
 
   public rmList()
   {
     this.head = null;
+    this.tail = null;
+  }
+
+  public void Insert(int i)
+  {
+    rmNode newNode = new rmNode(i);
+    if (head == null)
+    {
+      head = newNode;
+      tail = newNode;
+      return;
+    } 
+    tail.next = newNode;
+    tail = tail.next;
+    return;
   }
 }

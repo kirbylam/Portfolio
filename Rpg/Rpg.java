@@ -208,7 +208,7 @@ class Rpg
     return g;
   }
 
-  public static rmNode rmOption(rmNode currRm)
+  public static rmNode rmOption(rmGraph g, rmNode currRm)
   {
     boolean nextRoom = false; // did the player move to the next room yet?
     System.out.println(" \nWhat will you do?");
@@ -217,9 +217,48 @@ class Rpg
     {
       UI = new Scanner(System.in);
       String choice = UI.next().toLowerCase();
-      switch (case):
+      switch (choice)
       {
-
+        case "move":
+          boolean valid = false;
+          System.out.println(" Choose room to travel to:");
+          rmNode adjRm = currRm.next;
+          while (adjRm != null)
+          {
+            System.out.print(g.array[adjRm.index].head.rmName + " ");
+            adjRm = adjRm.next;
+          }
+          System.out.print("back\n");
+          while (valid == false)
+          {
+            UI = new Scanner(System.in);
+            choice = UI.next().toLowerCase();
+            if (choice.equals("back"))
+            {
+              valid = true;
+            }
+            else
+            {
+              adjRm = currRm.next;
+              while (adjRm != null)
+              {
+                if(g.array[adjRm.index].head.rmName.toLowerCase().equals(choice))
+                {
+                  currRm = g.array[adjRm.index].head;
+                  return currRm;
+                }
+                adjRm = adjRm.next;
+              } 
+              System.out.println("Not a valid destination!");
+            }
+          }
+          break;
+        case "search":
+          break;
+        case "back":
+          break;
+        default:
+          break;
       }
     }
     return currRm;
@@ -269,11 +308,12 @@ class Rpg
     {
       System.out.println(" Current Location: ");
       System.out.println("  " + currRm.rmName);
+      currRm = rmOption(map, currRm);
       /*if (battle() == false)
-      {
+        {
         System.out.println(" Game Over!");
         return;
-      }*/
+        }*/
     }
   }
 }

@@ -32,13 +32,19 @@ class Rpg
   // returns a random monster
   public static Monster randMon(int nb)
   {
+    int mobType = rand.nextInt(2); // chooses a random mob
     Monster mon = new Monster();
-    String[] monList = {"slime"};
-    String monName = monList[0];
+    String[] monList = {"slime", "bat"};
+    String monName = monList[mobType];
     if (monName.equals("slime"))
     {
       String name = "slime" + Integer.toString(nb);
       mon = new Slime(name);
+    }
+    else if (monName.equals("bat"))
+    {
+      String name = "bat" + Integer.toString(nb);
+      mon = new Bat(name);
     }
     return mon;
   }
@@ -86,6 +92,12 @@ class Rpg
           }
           break;
         case "Item":
+          Enumeration<Item> itms = player.inventory.keys();
+          while (itms.hasMoreElements())
+          {
+            Item itm = itms.nextElement();
+            System.out.println(itm.name + " " + player.inventory.get(itm));
+          }
           return choice;
         case "Run":
           return choice; 
@@ -122,49 +134,64 @@ class Rpg
       qNode atkr = turns.dequeue(); // dequeues queue (current turn)
       if (atkr.enty.equals(player.name)) // if current turn is player's
       {
+        // boolean to check if user chose "back" when choosing target
+        boolean back = true;
         printStatus(mobs); // prints status
-        String action = battleOption(); // asks for battle option
-        switch(action)
+        while (back == true)
         {
-          case "attack":
-            boolean valid = false;
-            while (valid == false)
-            {
-              // asks player to choose target b/n 1+ monsters
-              System.out.print("\n Choose your target: ");
-              for (int i = 0; i < nMobs; i += 1)
+          String action = battleOption(); // asks for battle option
+          switch(action)
+          {
+            case "attack":
+              boolean valid = false;
+              while (valid == false)
               {
-                if (mobs[i].mnHp > 0)
+                // asks player to choose target b/n 1+ monsters
+                System.out.print("\n Choose your target: ");
+                for (int i = 0; i < nMobs; i += 1)
                 {
-                  System.out.print(mobs[i].name + " ");
+                  if (mobs[i].mnHp > 0)
+                  {
+                    System.out.print(mobs[i].name + " ");
+                  }
+                }
+                System.out.println("back");
+                System.out.print("\n");
+                UI = new Scanner(System.in);
+                String target = UI.next();
+                if (target.equalsIgnoreCase("back"))
+                {
+                  valid = true;
+                }
+                else
+                {
+                  for (int i = 0; i < nMobs; i += 1)
+                  {
+                    if (target.equalsIgnoreCase(mobs[i].name))
+                    {
+                      back = false;
+                      valid = true;
+                      int dmg = calcDmg(player);
+                      System.out.print("\n You did " + dmg + " damage to ");
+                      System.out.println(mobs[i].name);
+                      mobs[i].mnHp -= dmg;
+                      if (mobs[i].mnHp <= 0)
+                      {
+                        mobs[i].mnHp = 0; // sets min hp to 0 (no negatives)
+                        System.out.println(" You killed " + mobs[i].name + "!");
+                        turns.deleteItm(target);
+                      }
+                    }
+                  } 
+                }
+                if (valid == false)
+                {
+                  System.out.println(" Not a valid target!");
                 }
               }
               System.out.print("\n");
-              UI = new Scanner(System.in);
-              String target = UI.next();
-              for (int i = 0; i < nMobs; i += 1)
-              {
-                if (target.equalsIgnoreCase(mobs[i].name))
-                {
-                  valid = true;
-                  int dmg = calcDmg(player);
-                  System.out.print("\n You did " + dmg + " damage to ");
-                  System.out.println(mobs[i].name);
-                  mobs[i].mnHp -= dmg;
-                  if (mobs[i].mnHp <= 0)
-                  {
-                    System.out.println(" You killed " + mobs[i].name + "!");
-                    turns.deleteItm(target);
-                  }
-                }
-              }
-              if (valid == false)
-              {
-                System.out.println(" Not a valid target!");
-              }
-            }
-            System.out.print("\n");
-            break;
+              break;
+          }
         }
       }
       else
@@ -266,7 +293,7 @@ class Rpg
             if (choice.equals("yes") || choice.equals("y"))
             {
               System.out.println("You opened the chest and got a potion!");
-              player.inventory.put(pot, 1);
+              player.inventory.put(pot, player.inventory.get(pot) + 1);
             }
             else if (choice.equals("no") || choice.equals("n"))
             {
@@ -285,9 +312,6 @@ class Rpg
             Item itm = itms.nextElement();
             System.out.println(itm.name + " " + player.inventory.get(itm));
           }
-          break;
-        case "back":
-          nextRoom = true;
           break;
         default:
           System.out.println("Not a valid choice!");
